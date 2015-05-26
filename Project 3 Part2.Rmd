@@ -1,0 +1,139 @@
+Project 3 Part 2 Terry Troutman
+========================================================
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, packages}
+# Load all of the packages that you end up using
+# in your analysis in this code chunk.
+
+# Notice that the parameter "echo" was set to FALSE for this code chunk.
+# This prevents the code from displaying in the knitted HTML output.
+# You should set echo=FALSE for all code chunks in your file.
+
+library(ggplot2)
+#library(plyr)
+#library(dplyr)
+
+library(GGally)
+library(scales)
+library(memisc)
+library(lattice)
+library(MASS)
+library(car)
+library(reshape)
+library(bitops)
+```
+
+```{r echo=FALSE, Load_the_Data}
+# Load the Data
+setwd("C:/R files")
+wine <-read.csv("wineQualityReds.csv")
+
+```
+
+   
+#Derived Variables
+  There is likely to be a relationship between residual.sugar and acid.  The more residual.sugar is present, the more acid is required to balance it.  So it makes sense to have a variable with SugarToAcid. SugarToAcid is a the ratio of residual.sugar variable to the fixed.acidity variable.  The volatile.acidity measurement is an indicator of spoilage so it was not considered.
+  The balance of salt to sugar is also likely to have an effect on the taste of wine.  So another derivied varialble will be SugarToSalt(Chlorides).
+  
+  
+```{r Residual Sugar To Fixed Acidity and  Sugar to Salt}
+wine$SugarToAcid <- wine$residual.sugar / wine$fixed.acidity
+wine$SugarToSalt <- wine$residual.sugar / wine$chlorides
+
+```
+```{r Summary SugarToAcid, echo=FALSE}
+
+summary(wine$SugarToAcid)
+
+```
+```{r summary SugarToSalt, echo=FALSE}
+
+summary(wine$SugarToSalt)
+
+```
+
+
+# Univariate Plots Section
+
+See Part 1.  Memory issue or other unknown bug prevents knitting if file gets too large.  
+
+
+# Bivariate Analysis
+
+Let's try plotting quality versus the the input variables.  This may be a dead end but it is hard to make inferences from the ggpairs plot.  
+Citric acid has a fairly strong correlation with fixed.acidity.  It must be remembered that many wines in the sample have no citric acid.  So the influence of citric acid is hard to quantify.  
+
+
+## Scatterplots
+
+```{r echo=FALSE} 
+
+ggplot(aes(x=volatile.acidity,y=quality),data=wine) + geom_point(alpha=.75, position="jitter")
+
+ggplot(aes(x=fixed.acidity,y=quality),data=wine) + geom_point(alpha=.75,  position="jitter")
+
+ggplot(aes(x=citric.acid,y=quality),data=wine) + geom_point(alpha=.5, position="jitter")
+
+ggplot(aes(x=alcohol,y=quality),data=wine) + geom_point(alpha=0.5,position="jitter")
+
+ggplot(aes(x=residual.sugar,y=quality),data=wine) + geom_point(alpha=0.5,position="jitter") + scale_x_continuous(limits=c(0,8))
+
+ggplot(aes(x=chlorides,y=quality),data=wine) + geom_point(alpha=0.5,position="jitter") + scale_x_continuous(breaks=c(0,.2,.025), limits=c(0,.2))
+
+ggplot(aes(x=free.sulfur.dioxide,y=quality),data=wine) + geom_point(alpha=0.5,position="jitter") 
+
+ggplot(aes(x=total.sulfur.dioxide,y=quality),data=wine) + geom_point(alpha=0.5,position="jitter") 
+
+ggplot(aes(x=sulphates,y=quality),data=wine) + geom_point(alpha=0.5,position="jitter") + scale_x_log10() + xlab("log10 sulphates")
+
+ggplot(aes(x=density,y=quality),data=wine) + geom_point(alpha=0.5,position="jitter")
+
+ggplot(aes(x=pH,y=quality),data=wine) + geom_point(alpha=0.5,position="jitter")
+
+ggplot(aes(x=SugarToAcid,y=quality),data=wine) + geom_point(alpha=0.5,position="jitter") + scale_x_log10()
+
+ggplot(aes(x=SugarToSalt,y=quality),data=wine) + geom_point(alpha=0.5,position="jitter") 
+
+
+
+```
+  
+### Talk about some of the relationships you observed in this part of the investigation. How did the feature(s) of interest vary with other features in the dataset?
+
+You can say that on average for a given quality, as the volatile acidity increases the quality decreases.  
+
+It's not posbile to make any inferences about fixed acidity adn quality. 
+
+It's not clear from the plots what influence citric acid has on wine quality. It could be argued that as wine alcohol content increases teh quality tends to rise.  We are lacking enough data points for certain quality values to definitely make this claim.
+
+It's not possible to make claims of residual sugars influence on quality.  
+Most values lie between 1.5 and 3 and in that range all quality values are represented.  
+
+It's not clear what influence chloride content has on wine.  Most values are in a narrow range and in tha range all quality values are present.  
+
+It's not clear how free sulfur dioxide affects quality.  There are ranges of values in each quality value.  
+
+It's not clear how total sulfur.dioxide affects quality.  There are ranges of value for each quality value.
+
+You could make a claim that there is a correlation between sulphates and wine quality.  All of the higher quality values have progressively lower minimum sulphate levels.  
+
+THere is a very weak correlation between density and wine quality.  THe lower quality wines have a higher density on average than the higher quality wines.  
+
+There is on clear relationship between pH and wine quality.
+
+THere is no clear relationship between the SugarToAcid ratio and wine quality.
+
+THere is a very weak trend that the higher the SugarToSalt ratio is the higher the wine quality. 
+
+### Did you observe any interesting relationships between the other features (not the main feature(s) of interest)?
+
+No.  
+
+### What was the strongest relationship you found?
+
+The strongest relationship was the inverse relationship between volatile acidity and wine quality.  
+
+
+# Multivariate Analysis Plots and References
+
+Please see Project 3 Part 3.  An Unknown bug prevents knitting if the file gets too large.  

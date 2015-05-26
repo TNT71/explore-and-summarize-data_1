@@ -1,0 +1,188 @@
+---
+title: "Project 3 Part III"
+author: "Terry Troutman"
+date: "Monday, May 25, 2015"
+output: html_document
+---
+
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, packages}
+# Load all of the packages that you end up using
+# in your analysis in this code chunk.
+
+# Notice that the parameter "echo" was set to FALSE for this code chunk.
+# This prevents the code from displaying in the knitted HTML output.
+# You should set echo=FALSE for all code chunks in your file.
+
+library(ggplot2)
+#library(plyr)
+#library(dplyr)
+
+library(GGally)
+library(scales)
+library(memisc)
+library(lattice)
+library(MASS)
+library(car)
+library(reshape)
+library(bitops)
+```
+
+```{r echo=FALSE, Load_the_Data}
+# Load the Data
+setwd("C:/R files")
+wine <-read.csv("wineQualityReds.csv")
+
+```
+   
+#Derived Variables
+  There is likely to be a relationship between residual.sugar and acid.  The more residual.sugar is present, the more acid is required to balance it.  So it makes sense to have a variable with SugarToAcid. SugarToAcid is a the ratio of residual.sugar variable to the fixed.acidity variable.  The volatile.acidity measurement is an indicator of spoilage so it was not considered.
+  The balance of salt to sugar is also likely to have an effect on the taste of wine.  So another derivied varialble will be SugarToSalt(Chlorides).
+  
+  
+```{r Residual Sugar To Fixed Acidity and  Sugar to Salt}
+wine$SugarToAcid <- wine$residual.sugar / wine$fixed.acidity
+wine$SugarToSalt <- wine$residual.sugar / wine$chlorides
+
+```
+```{r Summary SugarToAcid, echo=FALSE}
+
+summary(wine$SugarToAcid)
+
+```
+```{r summary SugarToSalt, echo=FALSE}
+
+summary(wine$SugarToSalt)
+
+```
+
+# Univariate Analysis
+
+See Part 1.  Memory issue or other unknown bug prevents knitting if file gets too large.
+
+
+# Bivariate Plots Section
+
+See Part 2.  Memory issue or other unknown bug prevents knitting if the file gets too large. 
+
+# Multivariate Plots Section
+
+```{r echo=FALSE, Multivariate_Plots}
+ggplot(aes(x=volatile.acidity,y=quality),data=wine) + geom_point(aes(color=density),alpha=.75, position="jitter")
+
+ggplot(aes(x=volatile.acidity,y=quality),data=wine) + geom_point(aes(color=alcohol),alpha=.75, position="jitter")
+
+ggplot(aes(x=volatile.acidity,y=quality),data=wine) + geom_point(aes(color=sulphates),alpha=.75,position="jitter",size=2.0)
+
+ggplot(aes(x=alcohol,y=quality),data=wine) + geom_point(aes(color=density),alpha=0.5,position="jitter")
+
+ggplot(aes(x=alcohol,y=quality),data=wine) + geom_point(aes(color=sulphates),alpha=0.5,position="jitter") +ggtitle("quality v alcohol colored by sulphates")
+
+ggplot(aes(x=alcohol,y=quality),data=wine) + geom_point(aes(color=volatile.acidity),alpha=0.5,position="jitter")
+
+ggplot(aes(x=sulphates,y=quality),data=wine) + geom_point(aes(color=alcohol),alpha=0.5,position="jitter") + scale_x_log10() + xlab("log10 sulphates")
+
+ggplot(aes(x=sulphates,y=quality),data=wine) + geom_point(aes(color=density),alpha=0.5,position="jitter") + scale_x_log10() + xlab("log10 sulphates")
+
+ggplot(aes(x=sulphates,y=quality),data=wine) + geom_point(aes(color=volatile.acidity),alpha=0.5,position="jitter") + scale_x_log10() + xlab("log10 sulphates")
+
+ggplot(aes(x=density,y=quality),data=wine) + geom_point(aes(color=alcohol),alpha=0.5,position="jitter")
+
+ggplot(aes(x=density,y=quality),data=wine) + geom_point(aes(color=sulphates),alpha=0.5,position="jitter")
+
+ggplot(aes(x=density,y=quality),data=wine) + geom_point(aes(color=volatile.acidity),alpha=0.5,position="jitter")
+
+
+```
+
+# Multivariate Analysis
+
+We could use some more insight into the data.  Perhaps by coloring some of the plots where we say weak correlation we can gain insights.  There was some correlation between density and quality, alcohol and quality, volatile acidity and quality, and sulphates and quality.  
+
+### Talk about some of the relationships you observed in this part of the investigation. Were there features that strengthened each other in terms of looking at your feature(s) of interest?
+
+Each of the variables which showed a correlation with wine quality were plotted and "colored" with each of the three other variables that showed correlation with quality.  
+
+### Were there any interesting or surprising interactions between features?
+
+Unfortunately the plotting gave no further insight into the data set.
+
+### OPTIONAL: Did you create any models with your dataset? Discuss the strengths and limitations of your model.
+
+------
+
+# Final Plots and Summary
+
+### Plot One
+```{r echo=FALSE, Plot_One}
+
+ggplot(aes(x=quality), data=wine, color="blue")+ geom_histogram()+
+  scale_y_log10()+
+  ggtitle("Distribution of quality is normalized when a log is taken")
+
+
+```
+
+### Description One
+
+We can see that by adjusting the y scale with a log10 that the distribution of quality values becomes quite normal.
+ 
+
+
+### Plot Two
+```{r echo=FALSE, Plot_Two}
+
+ggplot(aes(x=volatile.acidity,y=quality),data=wine) + geom_point(alpha=.6, position="jitter", color="red") 
+
+```
+
+### Description Two
+
+Plot two is the a plot of quality v volatile acidity.  This plot had the strongest correlation.  It is clear thatn as wine quality decreases the average volatile acidity for a given quality increases.  The minimum and maximum values for a range of volatile acidities for a given quality also tend to increases as wine quliaty decreases.  
+
+
+### Plot Three
+```{r echo=FALSE, Plot_Three}
+
+ggplot(aes(x=alcohol,y=quality),data=wine) + geom_point(aes(color=sulphates),alpha=0.5,position="jitter") +ggtitle("quality v alcohol colored by sulphates")
+
+```
+
+### Description Three
+
+It was hoped that by coloring the sulphate points in the quality v alcohol graph we can can further insight into the data set.  You can see that highest quality wine had a higher sulphate concentration.  However, You can also see the lowest level of wine quality had a higher sulphates concentration.  The lowest sulphate concentration is at the most common quality levels of 5 and 6.  However,  the low sulphate concentrations are spread over teh 5 adn 6 quality range.  No clear trend can be gleaned. 
+
+------
+
+# Reflection
+This data contains measurements of the wine itself but leaves out environmental data.  Environmental factors like Temperature, Soil pH, Soil Moisture, and amount of sunshine have been known to greatly affect wine quality.  This data set would be more illustrative if it had environental data.
+
+The sample size needs to increased or a better year or year needs to be sampled so that we have more data points where the quality is not just 5 or 6.  The number of points for quality 8 and quality 3 is quite small.  The number of points for quality 4 and quality size could also be increased. 
+
+THe average of each input variable could be used to make some sort of model of the graph.  It has no predictive ability because you can't use an average of all values as coefficient in predicting any one input variable.
+
+# References
+* Intro to Descriptive Statistics at www.udacity.com
+* http://www.practicalwinery.com/janfeb09/page2.htm
+* http://winemakersacademy.com/understanding-wine-acidity/
+* http://www.wineperspective.com/the_acidity_of_wine.htm
+* stackoverflow.com
+* https://s3.amazonaws.com/udacity-hosted-downloads/ud651/wineQualityInfo.txt
+* http://www.statmethods.net/management/subset.html 
+
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r}
+summary(cars)
+```
+
+You can also embed plots, for example:
+
+```{r, echo=FALSE}
+plot(cars)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
